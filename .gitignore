@@ -1,1 +1,6 @@
 *.eg
+et_generator/CMakeCache.txt
+et_generator/CMakeFiles/
+et_generator/Makefile
+et_generator/cmake_install.cmake
+et_generator/et_generator
