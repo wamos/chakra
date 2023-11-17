@@ -51,6 +51,28 @@ void twoCompNodesIndependent(int num_npus, int num_dims) {
   }
 }
 
+void twoNodesDependent(int num_npus, int num_dims) {
+  DependencyGraph *dg;
+  Node *node1, *node2;
+
+  for (int npu_id = 0; npu_id < num_npus; ++npu_id) {
+    dg = new DependencyGraph(getFilename(string(__func__), npu_id));
+
+    node1 = dg->addNode(ChakraProtoMsg::MEM_LOAD_NODE);
+    node1->set_name("MEM_LD_NODE");
+    node1->set_tensor_size(10*1000*1000);
+
+    node2 = dg->addNode(ChakraProtoMsg::COMP_NODE);
+    node2->set_name("COMP_NODE");
+    node2->set_simulated_run_time(5);    
+
+    dg->assignDep(node1, node2);
+
+    dg->flushEG();
+    delete dg;
+  }
+}
+
 void twoCompNodesDependent(int num_npus, int num_dims) {
   DependencyGraph *dg;
   Node *node1, *node2;
@@ -803,6 +825,7 @@ int main(int argc, char **argv)
   oneCompNode(num_npus, num_dims);
   twoCompNodesIndependent(num_npus, num_dims);
   twoCompNodesDependent(num_npus, num_dims);
+  twoNodesDependent(num_npus, num_dims);
 
   oneCommNodeAllReduce(num_npus, num_dims);
   oneCommNodeAllToAll(num_npus, num_dims);
